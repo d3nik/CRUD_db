@@ -1,0 +1,64 @@
+﻿@page "/customers"
+@using CRUD_db.Interfaces;
+@using CRUD_db.Models;
+@inject ICustomerService customerService;
+
+
+
+@if (customers == null)
+{
+    <h3>Loading...</h3>
+}
+else
+{
+    <NavLink class="nav-link" href="/customers/add">
+        <button class="btn btn-primary">Add Customer</button>
+    </NavLink>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>CustomerId</th>
+                <th>FullName</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>City</th>
+                <th>ZipCode</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var customer in customers)
+            {
+                <tr>
+                    <td>@customer.CustomerId</td>
+                    <td>@customer.FullName</td>
+                    <td>@customer.Phone</td>
+                    <td>@customer.Email</td>
+                    <td>@customer.City</td>
+                    <td>@customer.ZipCode</td>
+                    <td>
+                        <div class="mb-0">
+                            <button class="btn btn-primary">Update</button>
+                            <button class="btn btn-danger" @onclick="@(() => onDelete(customer.CustomerId))">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<Customer> customers = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers = await customerService.GetCustomers();
+    }
+
+    public async Task onDelete(int customerId)
+    {
+        await customerService.DeleteCustomer(customerId);
+        customers = await customerService.GetCustomers();
+    }
+}
