@@ -1,8 +1,9 @@
 ﻿@page "/customers"
+@rendermode InteractiveServer
 @using CRUD_db.Interfaces;
 @using CRUD_db.Models;
 @inject ICustomerService customerService;
-
+@inject NavigationManager navigationManager;
 
 
 @if (customers == null)
@@ -11,7 +12,7 @@
 }
 else
 {
-    <NavLink class="nav-link" href="/customers/add">
+    <NavLink class="nav-link" href="/customers/add_or_update_customer">
         <button class="btn btn-primary">Add Customer</button>
     </NavLink>
 
@@ -38,7 +39,7 @@ else
                     <td>@customer.ZipCode</td>
                     <td>
                         <div class="mb-0">
-                            <button class="btn btn-primary">Update</button>
+                            <button class="btn btn-primary" @onclick="@(() => onUpdate(customer))">Update</button>
                             <button class="btn btn-danger" @onclick="@(() => onDelete(customer.CustomerId))">Delete</button>
                         </div>
                     </td>
@@ -54,6 +55,21 @@ else
     protected override async Task OnInitializedAsync()
     {
         customers = await customerService.GetCustomers();
+    }
+
+    public void onUpdate(Customer customer)
+    {
+        var url = navigationManager.GetUriWithQueryParameters("/customers/add_or_update_customer", new Dictionary<string, object?>
+            {
+                ["CustomerId"] = customer.CustomerId,
+                ["FirstName"] = customer.FullName,
+                ["Phone"] = customer.Phone,
+                ["Email"] = customer.Email,
+                ["City"] = customer.City,
+                ["ZipCode"] = customer.ZipCode,
+            });
+
+        navigationManager.NavigateTo(url);
     }
 
     public async Task onDelete(int customerId)

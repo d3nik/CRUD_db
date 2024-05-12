@@ -61,6 +61,10 @@ namespace CRUD_db.Services
 
             var customerBefore = await GetById(updatedCustomer.CustomerId);
             customerBefore.FullName = updatedCustomer.FullName ?? customerBefore.FullName;
+            customerBefore.Phone = updatedCustomer.Phone ?? customerBefore.Phone;
+            customerBefore.Email = updatedCustomer.Email ?? customerBefore.Email;
+            customerBefore.City = updatedCustomer.City ?? customerBefore.City;
+            customerBefore.ZipCode = updatedCustomer.ZipCode ?? customerBefore.ZipCode;
 
             var query = $"UPDATE Customers SET FullName = @FullName, " +
                 $"Phone = @Phone, " +
