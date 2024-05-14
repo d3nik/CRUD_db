@@ -1,0 +1,86 @@
+﻿@page "/staff"
+@rendermode InteractiveServer
+@using CRUD_db.Interfaces;
+@using CRUD_db.Models;
+@inject IStaffService staffService;
+@inject NavigationManager navigationManager;
+
+
+@if (staff == null)
+{
+    <h3>Loading...</h3>
+}
+else
+{
+    <h3>Staff table</h3>
+
+    <NavLink class="nav-link" href="/staff/add_or_update_staff">
+        <button class="btn btn-primary">Add staff member</button>
+    </NavLink>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>StaffId</th>
+                <th>FirstName</th>
+                <th>LastName</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>HireDate</th>
+                <th>StoreId</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var staff in staff)
+            {
+                <tr>
+                    <td>@staff.StaffId</td>
+                    <td>@staff.FirstName</td>
+                    <td>@staff.LastName</td>
+                    <td>@staff.Email</td>
+                    <td>@staff.Phone</td>
+                    <td>@staff.HireDate</td>
+                    <td>@staff.StoreId</td>
+                    <td>
+                        <div class="mb-0">
+                            <button class="btn btn-primary" @onclick="@(() => onUpdate(staff))">Update</button>
+                            <button class="btn btn-danger" @onclick="@(() => onDelete(staff.StaffId))">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<Staff> staff = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        staff = await staffService.GetStaff();
+    }
+
+    public void onUpdate(Staff staff)
+    {
+        var url = navigationManager.GetUriWithQueryParameters("/staff/add_or_update_staff", new Dictionary<string, object?>
+            {
+                ["StaffId"] = staff.StaffId,
+                ["FirstName"] = staff.FirstName,
+                ["LastName"] = staff.LastName,
+                ["Email"] = staff.Email,
+                ["Phone"] = staff.Phone,
+                ["HireDate"] = staff.HireDate,
+                ["StoreId"] = staff.StoreId,
+            });
+
+        navigationManager.NavigateTo(url);
+    }
+
+    public async Task onDelete(int staffId)
+    {
+        await staffService.DeleteStaff(staffId);
+        staff = await staffService.GetStaff();
+    }
+}

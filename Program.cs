@@ -14,6 +14,11 @@ namespace CRUD_db
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
+
+            builder.Services.AddScoped<IStoreService, StoreService>();
+            builder.Services.AddScoped<IStaffService, StaffService>();
+            builder.Services.AddScoped<ISupplierService, SupplierService>();
+            builder.Services.AddScoped<IComponentService, ComponentService>();
             builder.Services.AddScoped<ICustomerService, CustomerService>();
             builder.Services.AddScoped<IConnectionService, ConnectionService>();
 

@@ -12,11 +12,13 @@
 }
 else
 {
+    <h3>Customers table</h3>
+
     <NavLink class="nav-link" href="/customers/add_or_update_customer">
         <button class="btn btn-primary">Add Customer</button>
     </NavLink>
 
-    <table class="table">
+    <table class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th>CustomerId</th>
@@ -25,6 +27,7 @@ else
                 <th>Email</th>
                 <th>City</th>
                 <th>ZipCode</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -62,7 +65,7 @@ else
         var url = navigationManager.GetUriWithQueryParameters("/customers/add_or_update_customer", new Dictionary<string, object?>
             {
                 ["CustomerId"] = customer.CustomerId,
-                ["FirstName"] = customer.FullName,
+                ["FullName"] = customer.FullName,
                 ["Phone"] = customer.Phone,
                 ["Email"] = customer.Email,
                 ["City"] = customer.City,

@@ -1,0 +1,86 @@
+﻿@page "/components"
+@rendermode InteractiveServer
+@using CRUD_db.Interfaces;
+@using CRUD_db.Models;
+@inject IComponentService componentService;
+@inject NavigationManager navigationManager;
+
+
+@if (components == null)
+{
+    <h3>Loading...</h3>
+}
+else
+{
+    <h3>Components table</h3>
+
+    <NavLink class="nav-link" href="/customers/add_or_update_component">
+        <button class="btn btn-primary">Add Component</button>
+    </NavLink>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ComponentId</th>
+                <th>Type</th>
+                <th>BrandId</th>
+                <th>Model</th>
+                <th>Specs</th>
+                <th>Price</th>
+                <th>QuantityInStock</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var component in components)
+            {
+                <tr>
+                    <td>@component.ComponentId</td>
+                    <td>@component.Type</td>
+                    <td>@component.BrandId</td>
+                    <td>@component.Model</td>
+                    <td>@component.Specs</td>
+                    <td>@component.Price</td>
+                    <td>@component.QuantityInStock</td>
+                    <td>
+                        <div class="mb-0">
+                            <button class="btn btn-primary" @onclick="@(() => onUpdate(component))">Update</button>
+                            <button class="btn btn-danger" @onclick="@(() => onDelete(component.ComponentId))">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<Component> components = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        components = await componentService.GetComponents();
+    }
+
+    public void onUpdate(Component component)
+    {
+        var url = navigationManager.GetUriWithQueryParameters("/components/add_or_update_components", new Dictionary<string, object?>
+            {
+                ["ComponentId"] = component.ComponentId,
+                ["Type"] = component.Type,
+                ["BrandId"] = component.BrandId,
+                ["Model"] = component.Model,
+                ["Specs"] = component.Specs,
+                ["Price"] = component.Price,
+                ["QuantityInStock"] = component.QuantityInStock
+            });
+
+        navigationManager.NavigateTo(url);
+    }
+
+    public async Task onDelete(int componentId)
+    {
+        await componentService.DeleteComponent(componentId);
+        components = await componentService.GetComponents();
+    }
+}

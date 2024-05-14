@@ -1,0 +1,80 @@
+﻿@page "/suppliers"
+@rendermode InteractiveServer
+@using CRUD_db.Interfaces;
+@using CRUD_db.Models;
+@inject ISupplierService supplierService;
+@inject NavigationManager navigationManager;
+
+
+@if (suppliers == null)
+{
+    <h3>Loading...</h3>
+}
+else
+{
+    <h3>Suppliers table</h3>
+
+    <NavLink class="nav-link" href="/customers/add_or_update_supplier">
+        <button class="btn btn-primary">Add supplier</button>
+    </NavLink>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>SupplierId</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var supplier in suppliers)
+            {
+                <tr>
+                    <td>@supplier.SupplierId</td>
+                    <td>@supplier.Name</td>
+                    <td>@supplier.Contact</td>
+                    <td>@supplier.Email</td>
+                    <td>@supplier.Address</td>
+                    <td>
+                        <div class="mb-0">
+                            <button class="btn btn-primary" @onclick="@(() => onUpdate(supplier))">Update</button>
+                            <button class="btn btn-danger" @onclick="@(() => onDelete(supplier.SupplierId))">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<Supplier> suppliers = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        suppliers = await supplierService.GetSuppliers();
+    }
+
+    public void onUpdate(Supplier supplier)
+    {
+        var url = navigationManager.GetUriWithQueryParameters("/suppliers/add_or_update_supplier", new Dictionary<string, object?>
+            {
+                ["SupplierId"] = supplier.SupplierId,
+                ["Name"] = supplier.Name,
+                ["Contact"] = supplier.Contact,
+                ["Email"] = supplier.Email,
+                ["Address"] = supplier.Address,
+            });
+
+        navigationManager.NavigateTo(url);
+    }
+
+    public async Task onDelete(int supplierId)
+    {
+        await supplierService.DeleteSupplier(supplierId);
+        suppliers = await supplierService.GetSuppliers();
+    }
+}
